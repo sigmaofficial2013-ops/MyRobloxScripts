@@ -319,7 +319,6 @@ Player.Idled:Connect(function()
     end
 end)
 
--- // ЗЕВС: 5 НОВЫХ ФУНКЦИЙ // --
 UI:Toggle("Anti-Void (Auto-Save)", "AntiVoid", function()
     Modules:SafeLoop("AntiVoid", 0.5, function()
         local Char = Player.Character
@@ -370,7 +369,6 @@ end)
 UI:Action("INFINITE YIELD (ADMIN)", Color3.fromRGB(100, 0, 150), function()
     loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
 end)
--- // КОНЕЦ НОВЫХ ФУНКЦИЙ // --
 
 UI:Toggle("Fast Proximity Prompts", "FastP", function()
     Modules:SafeLoop("FastP", 0.5, function()
@@ -421,8 +419,12 @@ UI:Toggle("FPS Optimization", "FPS", function()
     end
 end)
 
+-- // ИСПРАВЛЕННЫЙ FOV // --
 UI:Toggle("Wide FOV (120)", "FOV", function(s)
-    Camera.FieldOfView = s and 120 or 70
+    if not s then Camera.FieldOfView = 70 end
+    Modules:SafeLoop("FOV", 0.05, function()
+        Camera.FieldOfView = 120
+    end)
 end)
 
 UI:Toggle("Low Gravity", "LowGrav", function(s)
@@ -454,7 +456,9 @@ UI:Toggle("Expand Hitboxes", "Hitbox", function(s)
     end)
 end)
 
-UI:Toggle("Camera No-Clip", "CamNoclip", function(s)
+-- // ИСПРАВЛЕННЫЙ CAMERA NOCLIP // --
+UI:Toggle("Camera No-Clip & Far Zoom", "CamNoclip", function(s)
+    Player.CameraMaxZoomDistance = s and 10000 or 128
     Player.DevCameraOcclusionMode = s and Enum.DevCameraOcclusionMode.Invisicam or Enum.DevCameraOcclusionMode.Zoom
 end)
 
