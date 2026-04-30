@@ -304,8 +304,11 @@ UI:Toggle("Auto Clicker (0.1s)", "Click", function()
 end)
 
 UI:Toggle("High Jump Power", "SJ", function(s)
-    local Hum = Player.Character:FindFirstChild("Humanoid")
-    if Hum then Hum.JumpPower = s and Modules.Move.Jump or 50 end
+    local Hum = Player.Character and Player.Character:FindFirstChild("Humanoid")
+    if Hum then
+        Hum.UseJumpPower = true
+        Hum.JumpPower = s and Modules.Move.Jump or 50
+    end
 end)
 
 UI:Toggle("Full Brightness", "FB", function(s)
@@ -331,12 +334,12 @@ Player.Idled:Connect(function()
 end)
 
 -- PRECISION CLICK TELEPORT
-UI:Toggle("Click Teleport (Ctrl+L)", "ClickTP", function() end)
+UI:Toggle("Click Teleport", "ClickTP", function() end)
 Services.UserInputService.InputBegan:Connect(function(input, gpe)
     if not gpe and input.UserInputType == Enum.UserInputType.MouseButton1 then
-        if Zeus_Core._TOGGLES.ClickTP and Services.UserInputService:IsKeyDown(Modules.Input.Teleport) then
+        if Zeus_Core._TOGGLES.ClickTP then
             local Root = Player.Character and Player.Character:FindFirstChild("HumanoidRootPart")
-            if Root then Root.CFrame = CFrame.new(Mouse.Hit.p) + Vector3.new(0, 3, 0) end
+            if Root and Mouse.Hit then Root.CFrame = CFrame.new(Mouse.Hit.p) + Vector3.new(0, 3, 0) end
         end
     end
 end)
@@ -369,7 +372,7 @@ end)
 UI:Toggle("Zeus Spin Bot", "Spin", function()
     Modules:SafeLoop("Spin", 0.01, function()
         local Root = Player.Character:FindFirstChild("HumanoidRootPart")
-        Root.CFrame = Root.CFrame * CFrame.Angles(0, math.rad(45), 0)
+        if Root then Root.CFrame = Root.CFrame * CFrame.Angles(0, math.rad(45), 0) end
     end)
 end)
 
@@ -388,6 +391,55 @@ UI:Toggle("FPS Optimization", "FPS", function()
     for _, v in pairs(game:GetDescendants()) do
         if v:IsA("Texture") or v:IsA("Decal") then v:Destroy() end
     end
+end)
+
+UI:Toggle("Wide FOV (120)", "FOV", function(s)
+    Camera.FieldOfView = s and 120 or 70
+end)
+
+UI:Toggle("Low Gravity", "LowGrav", function(s)
+    workspace.Gravity = s and 50 or 196.2
+end)
+
+UI:Toggle("Expand Hitboxes", "Hitbox", function(s)
+    Modules:SafeLoop("Hitbox", 1, function()
+        for _, p in pairs(Services.Players:GetPlayers()) do
+            if p ~= Player and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+                local hrp = p.Character.HumanoidRootPart
+                if s then
+                    hrp.Size = Vector3.new(10, 10, 10)
+                    hrp.Transparency = 0.5
+                    hrp.CanCollide = false
+                else
+                    hrp.Size = Vector3.new(2, 2, 1)
+                    hrp.Transparency = 1
+                end
+            end
+        end
+    end)
+end)
+
+UI:Toggle("Anti-Void (Invisible Floor)", "AntiVoid", function(s)
+    if s then
+        if not workspace:FindFirstChild("ZeusAntiVoid") then
+            local part = Instance.new("Part", workspace)
+            part.Name = "ZeusAntiVoid"
+            part.Size = Vector3.new(2048, 1, 2048)
+            part.Position = Vector3.new(0, workspace.FallenPartsDestroyHeight + 15, 0)
+            part.Anchored = true
+            part.Transparency = 0.5
+            part.Color = Color3.fromRGB(255, 0, 0)
+        end
+    else
+        local part = workspace:FindFirstChild("ZeusAntiVoid")
+        if part then part:Destroy() end
+    end
+end)
+
+UI:Toggle("Always Day", "AlwaysDay", function(s)
+    Modules:SafeLoop("AlwaysDay", 1, function()
+        if s then Services.Lighting.ClockTime = 12 end
+    end)
 end)
 
 UI:Action("FORCE CHARACTER RESET", Color3.fromRGB(150, 0, 0), function()
