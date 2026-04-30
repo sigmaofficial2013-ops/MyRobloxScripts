@@ -319,8 +319,13 @@ UI:Toggle("Click Teleport", "ClickTP", function() end)
 Services.UserInputService.InputBegan:Connect(function(input, gpe)
     if not gpe and input.UserInputType == Enum.UserInputType.MouseButton1 then
         if Zeus_Core._TOGGLES.ClickTP then
-            local Root = Player.Character and Player.Character:FindFirstChild("HumanoidRootPart")
-            if Root and Mouse.Hit then Root.CFrame = CFrame.new(Mouse.Hit.p) + Vector3.new(0, 3, 0) end
+            local Char = Player.Character
+            local Root = Char and Char:FindFirstChild("HumanoidRootPart")
+            if Root then
+                Mouse.TargetFilter = Char
+                local Pos = Mouse.Hit.Position
+                Root.CFrame = CFrame.new(Pos + Vector3.new(0, 3, 0))
+            end
         end
     end
 end)
