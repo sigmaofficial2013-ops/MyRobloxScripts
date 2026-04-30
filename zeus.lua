@@ -234,7 +234,7 @@ UI:Toggle("Safe Walk Speed", "Speed", function(s)
     end
     Modules:SafeLoop("Speed", 0.1, function()
         local Hum = Player.Character:FindFirstChild("Humanoid")
-        Hum.WalkSpeed = Modules.Move.Speed + math.random(-2, 2)
+        if Hum then Hum.WalkSpeed = Modules.Move.Speed + math.random(-2, 2) end
     end)
 end)
 
@@ -319,7 +319,7 @@ Player.Idled:Connect(function()
     end
 end)
 
--- // ЗЕВС: 5 НОВЫХ ФУНКЦИЙ // --
+-- // ЗЕВС: НОВЫЙ МОДУЛЬ УЛЬТИМАТИВНЫХ ВОЗМОЖНОСТЕЙ // --
 UI:Toggle("Anti-Void (Auto-Save)", "AntiVoid", function()
     Modules:SafeLoop("AntiVoid", 0.5, function()
         local Char = Player.Character
@@ -367,12 +367,10 @@ UI:Toggle("God States (No Ragdoll)", "GodStates", function(s)
     end)
 end)
 
-UI:Action("Give BTools (Local)", Color3.fromRGB(0, 100, 200), function()
-    pcall(function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/ZynSploit/BTools/main/Script"))()
-    end)
+UI:Action("LAUNCH INFINITE YIELD (ADMIN)", Color3.fromRGB(100, 0, 150), function()
+    loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
 end)
--- // КОНЕЦ НОВЫХ ФУНКЦИЙ // --
+-- // КОНЕЦ МОДУЛЯ // --
 
 UI:Toggle("Fast Proximity Prompts", "FastP", function()
     Modules:SafeLoop("FastP", 0.5, function()
