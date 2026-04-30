@@ -254,16 +254,10 @@ end)
 -- SWISS WATCH NOCLIP
 UI:Toggle("Collision Bypass (Noclip)", "Noclip", function() end)
 Services.RunService.Stepped:Connect(function()
-    if Player.Character then
+    if Zeus_Core._TOGGLES.Noclip and Player.Character then
         for _, p in pairs(Player.Character:GetDescendants()) do
-            if p:IsA("BasePart") then
-                if Zeus_Core._TOGGLES.Noclip then
-                    p.CanCollide = false
-                else
-                    if p.Name == "HumanoidRootPart" or p.Name:find("Torso") then
-                        p.CanCollide = true
-                    end
-                end
+            if p:IsA("BasePart") and p.CanCollide then
+                p.CanCollide = false
             end
         end
     end
@@ -419,20 +413,11 @@ UI:Toggle("Expand Hitboxes", "Hitbox", function(s)
     end)
 end)
 
-UI:Toggle("Anti-Void (Invisible Floor)", "AntiVoid", function(s)
+UI:Toggle("Camera No-Clip (Invisicam)", "CamNoclip", function(s)
     if s then
-        if not workspace:FindFirstChild("ZeusAntiVoid") then
-            local part = Instance.new("Part", workspace)
-            part.Name = "ZeusAntiVoid"
-            part.Size = Vector3.new(2048, 1, 2048)
-            part.Position = Vector3.new(0, workspace.FallenPartsDestroyHeight + 15, 0)
-            part.Anchored = true
-            part.Transparency = 0.5
-            part.Color = Color3.fromRGB(255, 0, 0)
-        end
+        Player.DevCameraOcclusionMode = Enum.DevCameraOcclusionMode.Invisicam
     else
-        local part = workspace:FindFirstChild("ZeusAntiVoid")
-        if part then part:Destroy() end
+        Player.DevCameraOcclusionMode = Enum.DevCameraOcclusionMode.Zoom
     end
 end)
 
