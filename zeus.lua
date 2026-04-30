@@ -236,10 +236,16 @@ end)
 
 UI:Toggle("Collision Bypass (Noclip)", "Noclip", function() end)
 Services.RunService.Stepped:Connect(function()
-    if Zeus_Core._TOGGLES.Noclip and Player.Character then
+    if Player.Character then
         for _, p in pairs(Player.Character:GetDescendants()) do
             if p:IsA("BasePart") then
-                p.CanCollide = false
+                if Zeus_Core._TOGGLES.Noclip then
+                    p.CanCollide = false
+                else
+                    if p.Name == "HumanoidRootPart" or p.Name:find("Torso") then
+                        p.CanCollide = true
+                    end
+                end
             end
         end
     end
@@ -316,9 +322,12 @@ Services.UserInputService.InputBegan:Connect(function(input, gpe)
             local Char = Player.Character
             local Root = Char and Char:FindFirstChild("HumanoidRootPart")
             if Root then
+                -- Улучшенная фильтрация: игнорируем модель игрока, чтобы луч не попадал в себя
                 Mouse.TargetFilter = Char
-                local targetPos = Mouse.Hit.p
-                Root.CFrame = CFrame.new(targetPos + Vector3.new(0, 3, 0))
+                local hitPos = Mouse.Hit.p
+                if hitPos then
+                    Root.CFrame = CFrame.new(hitPos + Vector3.new(0, 3, 0))
+                end
             end
         end
     end
