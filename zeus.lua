@@ -419,11 +419,13 @@ UI:Toggle("FPS Optimization", "FPS", function()
     end
 end)
 
--- // ИСПРАВЛЕННЫЙ FOV // --
-UI:Toggle("Wide FOV (120)", "FOV", function(s)
-    if not s then Camera.FieldOfView = 70 end
-    Modules:SafeLoop("FOV", 0.05, function()
-        Camera.FieldOfView = 120
+-- // НОВАЯ ФУНКЦИЯ: ANTI-SIT (ВМЕСТО CLICK TP / FOV) // --
+UI:Toggle("Anti-Sit (No Chairs)", "AntiSit", function(s)
+    Modules:SafeLoop("AntiSit", 0.1, function()
+        local Hum = Player.Character and Player.Character:FindFirstChildOfClass("Humanoid")
+        if Hum then 
+            Hum.Sit = false 
+        end
     end)
 end)
 
@@ -456,7 +458,6 @@ UI:Toggle("Expand Hitboxes", "Hitbox", function(s)
     end)
 end)
 
--- // ИСПРАВЛЕННЫЙ CAMERA NOCLIP // --
 UI:Toggle("Camera No-Clip & Far Zoom", "CamNoclip", function(s)
     Player.CameraMaxZoomDistance = s and 10000 or 128
     Player.DevCameraOcclusionMode = s and Enum.DevCameraOcclusionMode.Invisicam or Enum.DevCameraOcclusionMode.Zoom
