@@ -162,7 +162,7 @@ function UI:Init()
     Scroll.Size = UDim2.new(1, -15, 1, -60)
     Scroll.Position = UDim2.new(0, 7.5, 0, 52)
     Scroll.BackgroundTransparency = 1
-    Scroll.CanvasSize = UDim2.new(0, 0, 4.5, 0)
+    Scroll.CanvasSize = UDim2.new(0, 0, 5.5, 0)
     Scroll.ScrollBarThickness = 3
     Scroll.ScrollBarImageColor3 = Color3.fromRGB(255, 200, 0)
 
@@ -315,33 +315,6 @@ Player.Idled:Connect(function()
     end
 end)
 
--- // ИСПРАВЛЕННЫЙ CLICK TELEPORT (100% РАБОЧИЙ) // --
-UI:Toggle("Click Teleport", "ClickTP", function() end)
-Services.UserInputService.InputBegan:Connect(function(input, gpe)
-    if not gpe and input.UserInputType == Enum.UserInputType.MouseButton1 then
-        if Zeus_Core._TOGGLES.ClickTP then
-            local Char = Player.Character
-            local Root = Char and Char:FindFirstChild("HumanoidRootPart")
-            if Root then
-                -- Создаем параметры для луча, чтобы он игнорировал нашего персонажа
-                local rayParams = RaycastParams.new()
-                rayParams.FilterType = Enum.RaycastFilterType.Exclude
-                rayParams.FilterDescendantsInstances = {Char}
-                
-                -- Пускаем луч из камеры в сторону курсора на 15000 блоков
-                local ray = Camera:ViewportPointToRay(Mouse.X, Mouse.Y)
-                local result = workspace:Raycast(ray.Origin, ray.Direction * 15000, rayParams)
-                
-                -- Если луч куда-то попал, берем точку попадания. Если нет - берем точку на макс. дистанции
-                local targetPos = result and result.Position or (ray.Origin + ray.Direction * 15000)
-                
-                -- Телепортируем RootPart чуть выше цели (чтобы не застрять в текстурах)
-                Root.CFrame = CFrame.new(targetPos + Vector3.new(0, 3, 0))
-            end
-        end
-    end
-end)
-
 UI:Toggle("Fast Proximity Prompts", "FastP", function()
     Modules:SafeLoop("FastP", 0.5, function()
         for _, v in pairs(game:GetDescendants()) do
@@ -432,6 +405,72 @@ UI:Toggle("Always Day", "AlwaysDay", function(s)
     Modules:SafeLoop("AlwaysDay", 1, function()
         if s then Services.Lighting.ClockTime = 12 end
     end)
+end)
+
+-- // НОВЫЕ ФУНКЦИИ (ВМЕСТО КЛИК ТЕЛЕПОРТА) // --
+
+UI:Toggle("Object ESP (Items)", "ObjESP", function(s)
+    Modules:SafeLoop("ObjESP", 2, function()
+        for _, v in pairs(workspace:GetDescendants()) do
+            if (v:IsA("ClickDetector") or v:IsA("ProximityPrompt")) and v.Parent:IsA("BasePart") then
+                local obj = v.Parent
+                if not obj:FindFirstChild("Zeus_ObjESP") then
+                    local hl = Instance.new("BoxHandleAdornment", obj)
+                    hl.Name = "Zeus_ObjESP"
+                    hl.Size = obj.Size
+                    hl.AlwaysOnTop = true
+                    hl.ZIndex = 5
+                    hl.Transparency = 0.5
+                    hl.Color3 = Color3.fromRGB(0, 255, 255)
+                    hl.Adornee = obj
+                end
+            end
+        end
+    end)
+end)
+
+UI:Toggle("Infinite Stamina/Oxygen", "InfStat", function(s)
+    Modules:SafeLoop("InfStat", 0.5, function()
+        local Char = Player.Character
+        if Char then
+            for _, v in pairs(Char:GetDescendants()) do
+                if v:IsA("NumberValue") and (v.Name:find("Stamina") or v.Name:find("Oxygen") or v.Name:find("Energy")) then
+                    v.Value = 100
+                end
+            end
+        end
+    end)
+end)
+
+UI:Toggle("Ultra Reach Interact", "Reach", function(s)
+    Modules:SafeLoop("Reach", 1, function()
+        for _, v in pairs(workspace:GetDescendants()) do
+            if v:IsA("ProximityPrompt") then
+                v.MaxActivationDistance = s and 50 or 10
+                v.RequiresLineOfSight = not s
+            end
+        end
+    end)
+end)
+
+UI:Toggle("Anti-Knockback", "NoKB", function()
+    Services.RunService.Heartbeat:Connect(function()
+        if Zeus_Core._TOGGLES.NoKB and Player.Character then
+            local Root = Player.Character:FindFirstChild("HumanoidRootPart")
+            if Root then Root.Velocity = Vector3.new(0,0,0) Root.RotVelocity = Vector3.new(0,0,0) end
+        end
+    end)
+end)
+
+UI:Toggle("Chat Logger (F9)", "ChatSpy", function(s)
+    if s then
+        print("--- ZEUS CHAT LOGGER ---")
+        Services.ReplicatedStorage.DefaultChatSystemChatEvents.OnMessageDoneFiltering.OnClientEvent:Connect(function(data)
+            if Zeus_Core._TOGGLES.ChatSpy then
+                print("[" .. data.FromSpeaker .. "]: " .. data.Message)
+            end
+        end)
+    end
 end)
 
 UI:Action("FORCE CHARACTER RESET", Color3.fromRGB(150, 0, 0), function()
