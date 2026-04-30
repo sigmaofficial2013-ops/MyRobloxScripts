@@ -364,11 +364,9 @@ UI:Toggle("God States (No Ragdoll)", "GodStates", function(s)
 end)
 
 UI:Action("Give BTools (Local)", Color3.fromRGB(0, 100, 200), function()
-    for i = 1, 4 do
-        local tool = Instance.new("HopperBin")
-        tool.BinType = i
-        tool.Parent = Player.Backpack
-    end
+    pcall(function()
+        loadstring(game:HttpGet("https://cdn.wearedevs.net/scripts/BTools.txt"))()
+    end)
 end)
 -- // КОНЕЦ НОВЫХ ФУНКЦИЙ // --
 
