@@ -1,16 +1,3 @@
---[[
-    ZEUS PROJECT: ETERNAL OMNI (v7.0)
-    "Swiss Watch Precision & Olympian Power"
-    
-    [CORE ARCHITECTURE]:
-    - Multi-Layered Metatable Spoofing (v3.0)
-    - Dynamic Environment Virtualization
-    - Thread-Safe State Management
-    - Advanced UI Engine (Non-Descriptive)
-    - Signal-Based Input Handling
-]]
-
---// 1. SERVICES & CORE INITIALIZATION
 if not game:IsLoaded() then game.Loaded:Wait() end
 
 local Zeus_Core = {
@@ -37,7 +24,6 @@ local Player = Services.Players.LocalPlayer
 local Mouse = Player:GetMouse()
 local Camera = workspace.CurrentCamera
 
---// 2. ULTIMATE SECURITY ENGINE (ANTI-DETECTION)
 local Security = {}
 
 function Security:Initialize()
@@ -96,7 +82,6 @@ function Security:Protect(instance)
     end
 end
 
---// 3. FUNCTIONAL MODULES (PRECISION LOGIC)
 local Modules = {
     Fly = {Speed = 60, State = false},
     Move = {Speed = 50, Jump = 120},
@@ -139,7 +124,6 @@ function Modules:HandleFlight()
     end)
 end
 
---// 4. UI CONSTRUCTION (VERBOSITY FOR STABILITY)
 local UI = {Elements = {}}
 
 function UI:Init()
@@ -224,7 +208,6 @@ function UI:Action(text, color, callback)
     B.MouseButton1Click:Connect(callback)
 end
 
---// 5. IMPLEMENTATION (500 LINES SYNC)
 UI:Init()
 
 UI:Toggle("Stealth Flight (WASD)", "Fly", function(s)
@@ -251,13 +234,18 @@ UI:Toggle("Safe Walk Speed", "Speed", function()
     end)
 end)
 
--- SWISS WATCH NOCLIP
 UI:Toggle("Collision Bypass (Noclip)", "Noclip", function() end)
 Services.RunService.Stepped:Connect(function()
-    if Zeus_Core._TOGGLES.Noclip and Player.Character then
+    if Player.Character then
         for _, p in pairs(Player.Character:GetDescendants()) do
-            if p:IsA("BasePart") and p.CanCollide then
-                p.CanCollide = false
+            if p:IsA("BasePart") then
+                if Zeus_Core._TOGGLES.Noclip then
+                    p.CanCollide = false
+                else
+                    if p.Name == "HumanoidRootPart" or p.Name:find("Torso") then
+                        p.CanCollide = true
+                    end
+                end
             end
         end
     end
@@ -327,7 +315,6 @@ Player.Idled:Connect(function()
     end
 end)
 
--- PRECISION CLICK TELEPORT
 UI:Toggle("Click Teleport", "ClickTP", function() end)
 Services.UserInputService.InputBegan:Connect(function(input, gpe)
     if not gpe and input.UserInputType == Enum.UserInputType.MouseButton1 then
@@ -396,29 +383,32 @@ UI:Toggle("Low Gravity", "LowGrav", function(s)
 end)
 
 UI:Toggle("Expand Hitboxes", "Hitbox", function(s)
+    if not s then
+        for _, p in pairs(Services.Players:GetPlayers()) do
+            if p ~= Player and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+                local hrp = p.Character.HumanoidRootPart
+                hrp.Size = Vector3.new(2, 2, 1)
+                hrp.Transparency = 1
+                hrp.CanCollide = true
+            end
+        end
+    end
     Modules:SafeLoop("Hitbox", 1, function()
         for _, p in pairs(Services.Players:GetPlayers()) do
             if p ~= Player and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
                 local hrp = p.Character.HumanoidRootPart
-                if s then
+                if Zeus_Core._TOGGLES.Hitbox then
                     hrp.Size = Vector3.new(10, 10, 10)
                     hrp.Transparency = 0.5
                     hrp.CanCollide = false
-                else
-                    hrp.Size = Vector3.new(2, 2, 1)
-                    hrp.Transparency = 1
                 end
             end
         end
     end)
 end)
 
-UI:Toggle("Camera No-Clip (Invisicam)", "CamNoclip", function(s)
-    if s then
-        Player.DevCameraOcclusionMode = Enum.DevCameraOcclusionMode.Invisicam
-    else
-        Player.DevCameraOcclusionMode = Enum.DevCameraOcclusionMode.Zoom
-    end
+UI:Toggle("Camera No-Clip", "CamNoclip", function(s)
+    Player.DevCameraOcclusionMode = s and Enum.DevCameraOcclusionMode.Invisicam or Enum.DevCameraOcclusionMode.Zoom
 end)
 
 UI:Toggle("Always Day", "AlwaysDay", function(s)
@@ -437,23 +427,8 @@ UI:Action("SAFE UNINJECT SCRIPT", Color3.fromRGB(50, 50, 50), function()
     UI.Root:Destroy()
 end)
 
---// 6. SYSTEM FINALIZATION
 Security:Initialize()
 Modules:HandleFlight()
-
--- STABILITY PROTOCOLS (BUFFERING TO 500 LINES)
-local function IntegrityCheck()
-    local ID = "ZEUS_" .. Services.HttpService:GenerateGUID(true)
-    print("--------------------------------------------------")
-    print("ZEUS ETERNAL OMNI LOADED SUCCESSFULLY")
-    print("Identity Hash: " .. ID)
-    print("Security Protocol: ACTIVE")
-    print("Metatable Status: HOOKED")
-    print("--------------------------------------------------")
-    return true
-end
-
-IntegrityCheck()
 
 task.spawn(function()
     while Zeus_Core._ACTIVE do
@@ -461,19 +436,5 @@ task.spawn(function()
         pcall(function() collectgarbage("collect") end)
     end
 end)
-
--- DOCUMENTATION & COMPATIBILITY LAYER
---[[
-    @Author: ZEUS AI
-    @Compatibility: Delta, Vega X, Fluxus, Arceus
-    @Safety: High-Level Encryption Ready
-    
-    Final Instruction Set:
-    1. Verify Metatable Access.
-    2. Execute Environment Check.
-    3. Load UI Hierarchy.
-    4. Link Functional Modules.
-    5. Monitor State Changes.
-]]
 
 return Zeus_Core
