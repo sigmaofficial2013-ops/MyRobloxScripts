@@ -319,7 +319,7 @@ Player.Idled:Connect(function()
     end
 end)
 
--- // ЗЕВС: НОВЫЙ МОДУЛЬ УЛЬТИМАТИВНЫХ ВОЗМОЖНОСТЕЙ // --
+-- // ЗЕВС: 5 НОВЫХ ФУНКЦИЙ // --
 UI:Toggle("Anti-Void (Auto-Save)", "AntiVoid", function()
     Modules:SafeLoop("AntiVoid", 0.5, function()
         local Char = Player.Character
@@ -367,10 +367,10 @@ UI:Toggle("God States (No Ragdoll)", "GodStates", function(s)
     end)
 end)
 
-UI:Action("LAUNCH INFINITE YIELD (ADMIN)", Color3.fromRGB(100, 0, 150), function()
+UI:Action("INFINITE YIELD (ADMIN)", Color3.fromRGB(100, 0, 150), function()
     loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
 end)
--- // КОНЕЦ МОДУЛЯ // --
+-- // КОНЕЦ НОВЫХ ФУНКЦИЙ // --
 
 UI:Toggle("Fast Proximity Prompts", "FastP", function()
     Modules:SafeLoop("FastP", 0.5, function()
