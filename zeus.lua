@@ -236,16 +236,10 @@ end)
 
 UI:Toggle("Collision Bypass (Noclip)", "Noclip", function() end)
 Services.RunService.Stepped:Connect(function()
-    if Player.Character then
+    if Zeus_Core._TOGGLES.Noclip and Player.Character then
         for _, p in pairs(Player.Character:GetDescendants()) do
             if p:IsA("BasePart") then
-                if Zeus_Core._TOGGLES.Noclip then
-                    p.CanCollide = false
-                else
-                    if p.Name == "HumanoidRootPart" or p.Name:find("Torso") then
-                        p.CanCollide = true
-                    end
-                end
+                p.CanCollide = false
             end
         end
     end
@@ -323,8 +317,8 @@ Services.UserInputService.InputBegan:Connect(function(input, gpe)
             local Root = Char and Char:FindFirstChild("HumanoidRootPart")
             if Root then
                 Mouse.TargetFilter = Char
-                local Pos = Mouse.Hit.Position
-                Root.CFrame = CFrame.new(Pos + Vector3.new(0, 3, 0))
+                local targetPos = Mouse.Hit.p
+                Root.CFrame = CFrame.new(targetPos + Vector3.new(0, 3, 0))
             end
         end
     end
