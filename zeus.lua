@@ -227,7 +227,11 @@ UI:Toggle("Stealth Flight (WASD)", "Fly", function(s)
     end
 end)
 
-UI:Toggle("Safe Walk Speed", "Speed", function()
+UI:Toggle("Safe Walk Speed", "Speed", function(s)
+    if not s then
+        local Hum = Player.Character and Player.Character:FindFirstChild("Humanoid")
+        if Hum then Hum.WalkSpeed = 16 end
+    end
     Modules:SafeLoop("Speed", 0.1, function()
         local Hum = Player.Character:FindFirstChild("Humanoid")
         Hum.WalkSpeed = Modules.Move.Speed + math.random(-2, 2)
@@ -365,7 +369,7 @@ end)
 
 UI:Action("Give BTools (Local)", Color3.fromRGB(0, 100, 200), function()
     pcall(function()
-        loadstring(game:HttpGet("https://cdn.wearedevs.net/scripts/BTools.txt"))()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/ZynSploit/BTools/main/Script"))()
     end)
 end)
 -- // КОНЕЦ НОВЫХ ФУНКЦИЙ // --
