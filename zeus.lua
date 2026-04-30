@@ -315,6 +315,7 @@ Player.Idled:Connect(function()
     end
 end)
 
+-- // ИСПРАВЛЕННЫЙ CLICK TELEPORT (100% РАБОЧИЙ) // --
 UI:Toggle("Click Teleport", "ClickTP", function() end)
 Services.UserInputService.InputBegan:Connect(function(input, gpe)
     if not gpe and input.UserInputType == Enum.UserInputType.MouseButton1 then
@@ -322,12 +323,20 @@ Services.UserInputService.InputBegan:Connect(function(input, gpe)
             local Char = Player.Character
             local Root = Char and Char:FindFirstChild("HumanoidRootPart")
             if Root then
-                -- Улучшенная фильтрация: игнорируем модель игрока, чтобы луч не попадал в себя
-                Mouse.TargetFilter = Char
-                local hitPos = Mouse.Hit.p
-                if hitPos then
-                    Root.CFrame = CFrame.new(hitPos + Vector3.new(0, 3, 0))
-                end
+                -- Создаем параметры для луча, чтобы он игнорировал нашего персонажа
+                local rayParams = RaycastParams.new()
+                rayParams.FilterType = Enum.RaycastFilterType.Exclude
+                rayParams.FilterDescendantsInstances = {Char}
+                
+                -- Пускаем луч из камеры в сторону курсора на 15000 блоков
+                local ray = Camera:ViewportPointToRay(Mouse.X, Mouse.Y)
+                local result = workspace:Raycast(ray.Origin, ray.Direction * 15000, rayParams)
+                
+                -- Если луч куда-то попал, берем точку попадания. Если нет - берем точку на макс. дистанции
+                local targetPos = result and result.Position or (ray.Origin + ray.Direction * 15000)
+                
+                -- Телепортируем RootPart чуть выше цели (чтобы не застрять в текстурах)
+                Root.CFrame = CFrame.new(targetPos + Vector3.new(0, 3, 0))
             end
         end
     end
