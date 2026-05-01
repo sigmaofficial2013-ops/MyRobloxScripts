@@ -128,7 +128,7 @@ local UI = {Elements = {}}
 
 function UI:Init()
     local Main = Instance.new("ScreenGui")
-    Main.Name = "Zeus_Eternal_" .. Services.HttpService:GenerateGUID(false)
+    Main.Name = "Zeus_Eternal_UI"
     Security:Protect(Main)
 
     local Frame = Instance.new("Frame", Main)
@@ -138,6 +138,7 @@ function UI:Init()
     Frame.BorderSizePixel = 0
     Frame.Active = true
     Frame.Draggable = true
+    Frame.ClipsDescendants = true
     
     Instance.new("UICorner", Frame).CornerRadius = UDim.new(0, 12)
     local Stroke = Instance.new("UIStroke", Frame)
@@ -151,20 +152,69 @@ function UI:Init()
     Instance.new("UICorner", Header).CornerRadius = UDim.new(0, 12)
 
     local Title = Instance.new("TextLabel", Header)
-    Title.Size = UDim2.new(1, 0, 1, 0)
-    Title.Text = "ZEUS ETERNAL OMNI v7.0"
+    Title.Size = UDim2.new(1, -100, 1, 0)
+    Title.Position = UDim2.new(0, 10, 0, 0)
+    Title.Text = "ZEUS ETERNAL OMNI"
     Title.TextColor3 = Color3.fromRGB(255, 200, 0)
     Title.Font = Enum.Font.GothamBold
     Title.TextSize = 14
+    Title.TextXAlignment = Enum.TextXAlignment.Left
     Title.BackgroundTransparency = 1
 
     local Scroll = Instance.new("ScrollingFrame", Frame)
     Scroll.Size = UDim2.new(1, -15, 1, -60)
     Scroll.Position = UDim2.new(0, 7.5, 0, 52)
     Scroll.BackgroundTransparency = 1
-    Scroll.CanvasSize = UDim2.new(0, 0, 4.5, 0)
+    Scroll.CanvasSize = UDim2.new(0, 0, 5.5, 0)
     Scroll.ScrollBarThickness = 3
     Scroll.ScrollBarImageColor3 = Color3.fromRGB(255, 200, 0)
+
+    -- КНОПКИ УПРАВЛЕНИЯ ОКНОМ
+    local MinBtn = Instance.new("TextButton", Header)
+    MinBtn.Size = UDim2.new(0, 25, 0, 25)
+    MinBtn.Position = UDim2.new(1, -85, 0, 10)
+    MinBtn.Text = "_"
+    MinBtn.BackgroundColor3 = Color3.fromRGB(35, 35, 40)
+    MinBtn.TextColor3 = Color3.new(1,1,1)
+    Instance.new("UICorner", MinBtn)
+
+    local MaxBtn = Instance.new("TextButton", Header)
+    MaxBtn.Size = UDim2.new(0, 25, 0, 25)
+    MaxBtn.Position = UDim2.new(1, -55, 0, 10)
+    MaxBtn.Text = "□"
+    MaxBtn.BackgroundColor3 = Color3.fromRGB(35, 35, 40)
+    MaxBtn.TextColor3 = Color3.new(1,1,1)
+    Instance.new("UICorner", MaxBtn)
+
+    local CloseBtn = Instance.new("TextButton", Header)
+    CloseBtn.Size = UDim2.new(0, 25, 0, 25)
+    CloseBtn.Position = UDim2.new(1, -25, 0, 10)
+    CloseBtn.Text = "X"
+    CloseBtn.BackgroundColor3 = Color3.fromRGB(80, 0, 0)
+    CloseBtn.TextColor3 = Color3.new(1,1,1)
+    Instance.new("UICorner", CloseBtn)
+
+    -- ЛОГИКА КНОПОК
+    MinBtn.MouseButton1Click:Connect(function()
+        Frame:TweenSize(UDim2.new(0, 300, 0, 45), "Out", "Quart", 0.3, true)
+        Scroll.Visible = false
+    end)
+
+    MaxBtn.MouseButton1Click:Connect(function()
+        Frame:TweenSize(UDim2.new(0, 300, 0, 500), "Out", "Quart", 0.3, true)
+        Scroll.Visible = true
+    end)
+
+    local visible = true
+    local function ToggleUI()
+        visible = not visible
+        Frame.Visible = visible
+    end
+
+    CloseBtn.MouseButton1Click:Connect(ToggleUI)
+    Services.UserInputService.InputBegan:Connect(function(input)
+        if input.KeyCode == Enum.KeyCode.RightControl then ToggleUI() end
+    end)
 
     local Layout = Instance.new("UIListLayout", Scroll)
     Layout.Padding = UDim.new(0, 8)
@@ -227,14 +277,10 @@ UI:Toggle("Stealth Flight (WASD)", "Fly", function(s)
     end
 end)
 
-UI:Toggle("Safe Walk Speed", "Speed", function(s)
-    if not s then
-        local Hum = Player.Character and Player.Character:FindFirstChild("Humanoid")
-        if Hum then Hum.WalkSpeed = 16 end
-    end
+UI:Toggle("Safe Walk Speed", "Speed", function()
     Modules:SafeLoop("Speed", 0.1, function()
         local Hum = Player.Character:FindFirstChild("Humanoid")
-        if Hum then Hum.WalkSpeed = Modules.Move.Speed + math.random(-2, 2) end
+        Hum.WalkSpeed = Modules.Move.Speed + math.random(-2, 2)
     end)
 end)
 
@@ -319,57 +365,6 @@ Player.Idled:Connect(function()
     end
 end)
 
-UI:Toggle("Anti-Void (Auto-Save)", "AntiVoid", function()
-    Modules:SafeLoop("AntiVoid", 0.5, function()
-        local Char = Player.Character
-        local Root = Char and Char:FindFirstChild("HumanoidRootPart")
-        if Root and Root.Position.Y < workspace.FallenPartsDestroyHeight + 50 then
-            Root.CFrame = Root.CFrame + Vector3.new(0, 200, 0)
-            Root.Velocity = Vector3.new(0, 0, 0)
-        end
-    end)
-end)
-
-UI:Toggle("X-Ray Vision", "XRay", function(s)
-    for _, v in pairs(workspace:GetDescendants()) do
-        if v:IsA("BasePart") and not v.Parent:FindFirstChild("Humanoid") then
-            if s then
-                if not v:FindFirstChild("Z_Trans") then
-                    local val = Instance.new("NumberValue", v)
-                    val.Name = "Z_Trans"
-                    val.Value = v.Transparency
-                end
-                v.Transparency = 0.5
-            else
-                local val = v:FindFirstChild("Z_Trans")
-                if val then v.Transparency = val.Value val:Destroy() end
-            end
-        end
-    end
-end)
-
-UI:Toggle("Click Delete Part", "ClickDel", function() end)
-Mouse.Button1Down:Connect(function()
-    if Zeus_Core._TOGGLES.ClickDel and Mouse.Target and not Mouse.Target.Parent:FindFirstChild("Humanoid") then
-        Mouse.Target:Destroy()
-    end
-end)
-
-UI:Toggle("God States (No Ragdoll)", "GodStates", function(s)
-    Modules:SafeLoop("GodStates", 0.1, function()
-        local Char = Player.Character
-        local Hum = Char and Char:FindFirstChildOfClass("Humanoid")
-        if Hum then
-            Hum:SetStateEnabled(Enum.HumanoidStateType.FallingDown, not Zeus_Core._TOGGLES.GodStates)
-            Hum:SetStateEnabled(Enum.HumanoidStateType.Ragdoll, not Zeus_Core._TOGGLES.GodStates)
-        end
-    end)
-end)
-
-UI:Action("INFINITE YIELD (ADMIN)", Color3.fromRGB(100, 0, 150), function()
-    loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
-end)
-
 UI:Toggle("Fast Proximity Prompts", "FastP", function()
     Modules:SafeLoop("FastP", 0.5, function()
         for _, v in pairs(game:GetDescendants()) do
@@ -419,14 +414,8 @@ UI:Toggle("FPS Optimization", "FPS", function()
     end
 end)
 
--- // НОВАЯ ФУНКЦИЯ: ANTI-SIT (ВМЕСТО CLICK TP / FOV) // --
-UI:Toggle("Anti-Sit (No Chairs)", "AntiSit", function(s)
-    Modules:SafeLoop("AntiSit", 0.1, function()
-        local Hum = Player.Character and Player.Character:FindFirstChildOfClass("Humanoid")
-        if Hum then 
-            Hum.Sit = false 
-        end
-    end)
+UI:Toggle("Wide FOV (120)", "FOV", function(s)
+    Camera.FieldOfView = s and 120 or 70
 end)
 
 UI:Toggle("Low Gravity", "LowGrav", function(s)
@@ -458,8 +447,7 @@ UI:Toggle("Expand Hitboxes", "Hitbox", function(s)
     end)
 end)
 
-UI:Toggle("Camera No-Clip & Far Zoom", "CamNoclip", function(s)
-    Player.CameraMaxZoomDistance = s and 10000 or 128
+UI:Toggle("Camera No-Clip", "CamNoclip", function(s)
     Player.DevCameraOcclusionMode = s and Enum.DevCameraOcclusionMode.Invisicam or Enum.DevCameraOcclusionMode.Zoom
 end)
 
@@ -467,6 +455,70 @@ UI:Toggle("Always Day", "AlwaysDay", function(s)
     Modules:SafeLoop("AlwaysDay", 1, function()
         if s then Services.Lighting.ClockTime = 12 end
     end)
+end)
+
+UI:Toggle("Object ESP (Items)", "ObjESP", function(s)
+    Modules:SafeLoop("ObjESP", 2, function()
+        for _, v in pairs(workspace:GetDescendants()) do
+            if (v:IsA("ClickDetector") or v:IsA("ProximityPrompt")) and v.Parent:IsA("BasePart") then
+                local obj = v.Parent
+                if not obj:FindFirstChild("Zeus_ObjESP") then
+                    local hl = Instance.new("BoxHandleAdornment", obj)
+                    hl.Name = "Zeus_ObjESP"
+                    hl.Size = obj.Size
+                    hl.AlwaysOnTop = true
+                    hl.ZIndex = 5
+                    hl.Transparency = 0.5
+                    hl.Color3 = Color3.fromRGB(0, 255, 255)
+                    hl.Adornee = obj
+                end
+            end
+        end
+    end)
+end)
+
+UI:Toggle("Infinite Stamina/Oxygen", "InfStat", function(s)
+    Modules:SafeLoop("InfStat", 0.5, function()
+        local Char = Player.Character
+        if Char then
+            for _, v in pairs(Char:GetDescendants()) do
+                if v:IsA("NumberValue") and (v.Name:find("Stamina") or v.Name:find("Oxygen") or v.Name:find("Energy")) then
+                    v.Value = 100
+                end
+            end
+        end
+    end)
+end)
+
+UI:Toggle("Ultra Reach Interact", "Reach", function(s)
+    Modules:SafeLoop("Reach", 1, function()
+        for _, v in pairs(workspace:GetDescendants()) do
+            if v:IsA("ProximityPrompt") then
+                v.MaxActivationDistance = s and 50 or 10
+                v.RequiresLineOfSight = not s
+            end
+        end
+    end)
+end)
+
+UI:Toggle("Anti-Knockback", "NoKB", function()
+    Services.RunService.Heartbeat:Connect(function()
+        if Zeus_Core._TOGGLES.NoKB and Player.Character then
+            local Root = Player.Character:FindFirstChild("HumanoidRootPart")
+            if Root then Root.Velocity = Vector3.new(0,0,0) Root.RotVelocity = Vector3.new(0,0,0) end
+        end
+    end)
+end)
+
+UI:Toggle("Chat Logger (F9)", "ChatSpy", function(s)
+    if s then
+        print("--- ZEUS CHAT LOGGER ---")
+        Services.ReplicatedStorage.DefaultChatSystemChatEvents.OnMessageDoneFiltering.OnClientEvent:Connect(function(data)
+            if Zeus_Core._TOGGLES.ChatSpy then
+                print("[" .. data.FromSpeaker .. "]: " .. data.Message)
+            end
+        end)
+    end
 end)
 
 UI:Action("FORCE CHARACTER RESET", Color3.fromRGB(150, 0, 0), function()
